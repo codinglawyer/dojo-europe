@@ -23,6 +23,22 @@ module ComposableMap = {
     );
 };
 
+module ZoomableGroup = {
+  [@bs.deriving abstract]
+  type jsProps = {
+    center: array(int),
+    disablePanning: bool,
+  };
+  [@bs.module "react-simple-maps"]
+  external zoomableGroup : ReasonReact.reactClass = "ZoomableGroup";
+  let make = (~center, ~disablePanning=false, children) =>
+    ReasonReact.wrapJsForReason(
+      ~reactClass=zoomableGroup,
+      ~props=jsProps(~center, ~disablePanning),
+      children,
+    );
+};
+
 module App = {
   let component = ReasonReact.statelessComponent("App");
   let make = _children => {
@@ -39,8 +55,9 @@ module App = {
           )
           width=980
           height=551
-          style=(ReactDOMRe.Style.make(~width="100%", ~height="auto", ()))
-        />
+          style=(ReactDOMRe.Style.make(~width="100%", ~height="auto", ()))>
+          <ZoomableGroup center=[|0, 20|] disablePanning=false />
+        </ComposableMap>
       </div>,
   };
 };
