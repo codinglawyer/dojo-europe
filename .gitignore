@@ -3,3 +3,4 @@ lib
 /.merlin
 /src/index.bs.js
 /src/Fetcher.bs.js
+yarn-error.log*

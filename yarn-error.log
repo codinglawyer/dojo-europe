@@ -1,8 +1,8 @@
 Arguments: 
-  /Users/david/.nvm/versions/node/v8.9.4/bin/node /Users/david/.nvm/versions/node/v8.9.4/bin/yarn star
+  /Users/david/.nvm/versions/node/v8.9.4/bin/node /Users/david/.nvm/versions/node/v8.9.4/bin/yarn watcg
 
 PATH: 
-  /Users/david/Library/Android/sdk/platform-tools:/Users/david/Library/Android/sdk/tools:/usr/local/bin:/usr/local/sbin:/Users/david/.bin:/Users/david/.yarn/bin:/Users/david/.rvm/bin:/Users/david/.nvm/versions/node/v8.9.4/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin
+  /Users/david/Library/Android/sdk/platform-tools:/Users/david/Library/Android/sdk/tools:/usr/local/bin:/usr/local/sbin:/Users/david/.bin:/Users/david/.yarn/bin:/Users/david/.rvm/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/Users/david/Library/Android/sdk/platform-tools:/Users/david/Library/Android/sdk/tools:/usr/local/sbin:/Users/david/.bin:/Users/david/.yarn/bin:/Users/david/.rvm/bin:/Users/david/.nvm/versions/node/v8.9.4/bin
 
 Yarn version: 
   1.5.1
@@ -204,7 +204,7 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/whatwg-fetch/-/whatwg-fetch-2.0.4.tgz#dde6a5df315f9d39991aa17621853d720b85566f"
 
 Trace: 
-  Error: Command "star" not found. Did you mean "start"?
+  Error: Command "watcg" not found. Did you mean "watch"?
       at new MessageError (/Users/david/.nvm/versions/node/v8.9.4/lib/node_modules/yarn/lib/cli.js:186:110)
       at /Users/david/.nvm/versions/node/v8.9.4/lib/node_modules/yarn/lib/cli.js:87307:17
       at Generator.next (<anonymous>)
