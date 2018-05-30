@@ -39,6 +39,19 @@ module ZoomableGroup = {
     );
 };
 
+module Geographies = {
+  [@bs.deriving abstract]
+  type jsProps = {geography: string};
+  [@bs.module "react-simple-maps"]
+  external geographies : ReasonReact.reactClass = "Geographies";
+  let make = (~geography, children) =>
+    ReasonReact.wrapJsForReason(
+      ~reactClass=geographies,
+      ~props=jsProps(~geography),
+      children,
+    );
+};
+
 module App = {
   let component = ReasonReact.statelessComponent("App");
   let make = _children => {
@@ -56,7 +69,9 @@ module App = {
           width=980
           height=551
           style=(ReactDOMRe.Style.make(~width="100%", ~height="auto", ()))>
-          <ZoomableGroup center=[|0, 20|] disablePanning=false />
+          <ZoomableGroup center=[|0, 20|] disablePanning=false>
+            <Geographies geography="world-50m.json" />
+          </ZoomableGroup>
         </ComposableMap>
       </div>,
   };
