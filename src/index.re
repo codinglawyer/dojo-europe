@@ -52,8 +52,60 @@ module Geographies = {
     );
 };
 
+module Geography = {
+  type projectionT;
+  type geographyT;
+  [@bs.deriving abstract]
+  type styleT = {
+    default: ReactDOMRe.Style.t,
+    hover: ReactDOMRe.Style.t,
+    pressed: ReactDOMRe.Style.t,
+  };
+  [@bs.deriving abstract]
+  type jsProps = {
+    geography: geographyT,
+    projection: projectionT,
+    style: styleT,
+  };
+  [@bs.module "react-simple-maps"]
+  external geographyComponent : ReasonReact.reactClass = "Geography";
+  let make = (~geography, ~projection, ~style, children) =>
+    ReasonReact.wrapJsForReason(
+      ~reactClass=geographyComponent,
+      ~props=jsProps(~geography, ~projection, ~style),
+      children,
+    );
+};
+
 module App = {
   let component = ReasonReact.statelessComponent("App");
+  let styleC =
+    Geography.styleT(
+      ~default=
+        ReactDOMRe.Style.make(
+          ~fill="#ECEFF1",
+          ~stroke="#607D8B",
+          ~strokeWidth="0.75",
+          ~outline="none",
+          (),
+        ),
+      ~hover=
+        ReactDOMRe.Style.make(
+          ~fill="#607D8B",
+          ~stroke="#607D8B",
+          ~strokeWidth="0.75",
+          ~outline="none",
+          (),
+        ),
+      ~pressed=
+        ReactDOMRe.Style.make(
+          ~fill="#FF5722",
+          ~stroke="#607D8B",
+          ~strokeWidth="0.75",
+          ~outline="none",
+          (),
+        ),
+    );
   let make = _children => {
     ...component,
     render: _self =>
@@ -70,7 +122,16 @@ module App = {
           height=551
           style=(ReactDOMRe.Style.make(~width="100%", ~height="auto", ()))>
           <ZoomableGroup center=[|0, 20|] disablePanning=false>
-            <Geographies geography="world-50m.json" />
+            <Geographies geography="world-50m.json">
+              ...(
+                   (geographies, projection) =>
+                     Array.mapi(
+                       (i, geography) =>
+                         <Geography geography projection style=styleC />,
+                       geographies,
+                     )
+                 )
+            </Geographies>
           </ZoomableGroup>
         </ComposableMap>
       </div>,
