@@ -1,5 +1,3 @@
-let toString = ReasonReact.string;
-
 module ComposableMap = {
   [@bs.deriving abstract]
   type projectionConfigT = {
@@ -54,7 +52,8 @@ module Geographies = {
 
 module Geography = {
   type projectionT;
-  type geographyT;
+  [@bs.deriving abstract]
+  type geographyT = {id: string};
   [@bs.deriving abstract]
   type styleT = {
     default: ReactDOMRe.Style.t,
@@ -110,7 +109,6 @@ module App = {
     ...component,
     render: _self =>
       <div className="title">
-        (toString("Hello wor"))
         <ComposableMap
           projectionConfig=(
             ComposableMap.projectionConfigT(
@@ -127,7 +125,16 @@ module App = {
                    (geographies, projection) =>
                      Array.mapi(
                        (i, geography) =>
-                         <Geography geography projection style=styleC />,
+                         if (Geography.id(geography) !== "ATA") {
+                           <Geography
+                             key=(string_of_int(i))
+                             geography
+                             projection
+                             style=styleC
+                           />;
+                         } else {
+                           <div key=(string_of_int(i)) />;
+                         },
                        geographies,
                      )
                  )
