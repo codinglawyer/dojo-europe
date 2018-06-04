@@ -1,3 +1,4 @@
+
 module ComposableMap = {
   [@bs.deriving abstract]
   type projectionConfigT = {
@@ -51,9 +52,9 @@ module Geographies = {
 };
 
 module Geography = {
-  type projectionT;
   [@bs.deriving abstract]
   type geographyT = {id: string};
+  type projectionT;
   [@bs.deriving abstract]
   type styleT = {
     default: ReactDOMRe.Style.t,
@@ -78,11 +79,11 @@ module Geography = {
 
 module Markers = {
   [@bs.module "react-simple-maps"]
-  external markersComponent : ReasonReact.reactClass = "Marker";
-  let make = (~children) =>
+  external markersComponent : ReasonReact.reactClass = "Markers";
+  let make = children =>
     ReasonReact.wrapJsForReason(
       ~reactClass=markersComponent,
-      ~props=Js.Obj.empty(),
+      ~props=(),
       children,
     );
 };
@@ -102,15 +103,15 @@ module Marker = {
   };
   [@bs.deriving abstract]
   type jsProps = {
-    marker: markerT,
     style: styleT,
+    marker: markerT,
   };
   [@bs.module "react-simple-maps"]
   external markerComponent : ReasonReact.reactClass = "Marker";
-  let make = (~marker, ~style, children) =>
+  let make = (~style, ~marker, children) =>
     ReasonReact.wrapJsForReason(
       ~reactClass=markerComponent,
-      ~props=jsProps(~marker, ~style),
+      ~props=jsProps(~style, ~marker),
       children,
     );
 };
@@ -193,8 +194,21 @@ module App = {
                     ~hover=ReactDOMRe.Style.make(~fill="#FFFFFF", ()),
                     ~pressed=ReactDOMRe.Style.make(~fill="#FF5722", ()),
                   )
-                )
-              />
+                )>
+                <circle
+                  cx="0"
+                  cy="0"
+                  r="6px"
+                  style=(
+                    ReactDOMRe.Style.make(
+                      ~stroke="#FF5722",
+                      ~strokeWidth="3px",
+                      ~opacity="0.9",
+                      (),
+                    )
+                  )
+                />
+              </Marker>
             </Markers>
           </ZoomableGroup>
         </ComposableMap>
