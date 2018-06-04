@@ -76,6 +76,45 @@ module Geography = {
     );
 };
 
+module Markers = {
+  [@bs.module "react-simple-maps"]
+  external markersComponent : ReasonReact.reactClass = "Marker";
+  let make = (~children) =>
+    ReasonReact.wrapJsForReason(
+      ~reactClass=markersComponent,
+      ~props=Js.Obj.empty(),
+      children,
+    );
+};
+
+module Marker = {
+  [@bs.deriving abstract]
+  type markerT = {
+    markerOffset: int,
+    coordinates: array(float),
+    name: string,
+  };
+  [@bs.deriving abstract]
+  type styleT = {
+    default: ReactDOMRe.Style.t,
+    hover: ReactDOMRe.Style.t,
+    pressed: ReactDOMRe.Style.t,
+  };
+  [@bs.deriving abstract]
+  type jsProps = {
+    marker: markerT,
+    style: styleT,
+  };
+  [@bs.module "react-simple-maps"]
+  external markerComponent : ReasonReact.reactClass = "Marker";
+  let make = (~marker, ~style, children) =>
+    ReasonReact.wrapJsForReason(
+      ~reactClass=markerComponent,
+      ~props=jsProps(~marker, ~style),
+      children,
+    );
+};
+
 module App = {
   let component = ReasonReact.statelessComponent("App");
   let styleC =
@@ -139,6 +178,24 @@ module App = {
                      )
                  )
             </Geographies>
+            <Markers>
+              <Marker
+                marker=(
+                  Marker.markerT(
+                    ~markerOffset=35,
+                    ~name="Santiago",
+                    ~coordinates=[|(-70.6693), (-33.4489)|],
+                  )
+                )
+                style=(
+                  Marker.styleT(
+                    ~default=ReactDOMRe.Style.make(~fill="#FF5722", ()),
+                    ~hover=ReactDOMRe.Style.make(~fill="#FFFFFF", ()),
+                    ~pressed=ReactDOMRe.Style.make(~fill="#FF5722", ()),
+                  )
+                )
+              />
+            </Markers>
           </ZoomableGroup>
         </ComposableMap>
       </div>,
