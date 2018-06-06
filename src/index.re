@@ -165,7 +165,11 @@ module App = {
   let make = _children => {
     ...component,
     initialState: () => {markers: [||]},
-    didMount: self =>
+    didMount: self => {
+      Fetcher.fetchPost(
+        ~url="https://immense-river-25513.herokuapp.com/add-location",
+        ~body="codinglawyer",
+      );
       Fetcher.fetchGet(
         ~url="https://immense-river-25513.herokuapp.com/locations", ~cb=data => {
         let data =
@@ -181,7 +185,8 @@ module App = {
             data,
           );
         self.send(SetMarkers(data));
-      }),
+      });
+    },
     reducer: (action, _state) =>
       switch (action) {
       | SetMarkers(markers) => ReasonReact.Update({markers: markers})
