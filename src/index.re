@@ -1,4 +1,3 @@
-
 module ComposableMap = {
   [@bs.deriving abstract]
   type projectionConfigT = {
@@ -116,8 +115,26 @@ module Marker = {
     );
 };
 
+let markersList = [|
+  Marker.markerT(
+    ~markerOffset=35,
+    ~name="Santiago",
+    ~coordinates=[|(-70.6693), (-33.4489)|],
+  ),
+|];
+
+let markerStyle =
+  Marker.styleT(
+    ~default=ReactDOMRe.Style.make(~fill="#FF5722", ()),
+    ~hover=ReactDOMRe.Style.make(~fill="#FFFFFF", ()),
+    ~pressed=ReactDOMRe.Style.make(~fill="#FF5722", ()),
+  );
+
 module App = {
-  let component = ReasonReact.statelessComponent("App");
+  type action =
+    | SetMarkers(array(Marker.markerT));
+  type state = {markers: array(Marker.markerT)};
+  let component = ReasonReact.reducerComponent("App");
   let styleC =
     Geography.styleT(
       ~default=
@@ -147,7 +164,29 @@ module App = {
     );
   let make = _children => {
     ...component,
-    render: _self =>
+    initialState: () => {markers: [||]},
+    didMount: self =>
+      Fetcher.fetchGet(
+        ~url="https://immense-river-25513.herokuapp.com/locations", ~cb=data => {
+        let data =
+          Array.map(
+            marker => {
+              let (lat, long) = marker |. Fetcher.location;
+              Marker.markerT(
+                ~markerOffset=-25,
+                ~name=marker |. Fetcher.username,
+                ~coordinates=[|long, lat|],
+              );
+            },
+            data,
+          );
+        self.send(SetMarkers(data));
+      }),
+    reducer: (action, _state) =>
+      switch (action) {
+      | SetMarkers(markers) => ReasonReact.Update({markers: markers})
+      },
+    render: ({state}) =>
       <div className="title">
         <ComposableMap
           projectionConfig=(
@@ -180,35 +219,28 @@ module App = {
                  )
             </Geographies>
             <Markers>
-              <Marker
-                marker=(
-                  Marker.markerT(
-                    ~markerOffset=35,
-                    ~name="Santiago",
-                    ~coordinates=[|(-70.6693), (-33.4489)|],
-                  )
-                )
-                style=(
-                  Marker.styleT(
-                    ~default=ReactDOMRe.Style.make(~fill="#FF5722", ()),
-                    ~hover=ReactDOMRe.Style.make(~fill="#FFFFFF", ()),
-                    ~pressed=ReactDOMRe.Style.make(~fill="#FF5722", ()),
-                  )
-                )>
-                <circle
-                  cx="0"
-                  cy="0"
-                  r="6px"
-                  style=(
-                    ReactDOMRe.Style.make(
-                      ~stroke="#FF5722",
-                      ~strokeWidth="3px",
-                      ~opacity="0.9",
-                      (),
-                    )
-                  )
-                />
-              </Marker>
+              ...(
+                   Array.mapi(
+                     (i, mark) =>
+                       <Marker
+                         key=(string_of_int(i)) marker=mark style=markerStyle>
+                         <circle
+                           cx="0"
+                           cy="0"
+                           r="6px"
+                           style=(
+                             ReactDOMRe.Style.make(
+                               ~stroke="#FF5722",
+                               ~strokeWidth="3px",
+                               ~opacity="0.9",
+                               (),
+                             )
+                           )
+                         />
+                       </Marker>,
+                     state.markers,
+                   )
+                 )
             </Markers>
           </ZoomableGroup>
         </ComposableMap>
