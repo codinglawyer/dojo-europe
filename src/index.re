@@ -240,8 +240,19 @@ module App = {
                                ~opacity="0.9",
                                (),
                              )
-                           )
-                         />
+                           )/>
+                           <text
+                             textAnchor="middle"
+                             y=(string_of_int(mark |. Marker.markerOffset))
+                             style=(
+                               ReactDOMRe.Style.make(
+                                 ~fontFamily="Roboto, sans-serif",
+                                 ~fill="#607D8B",
+                                 (),
+                               )
+                             )>
+                             (ReasonReact.string(mark |. Marker.name))
+                           </text>
                        </Marker>,
                      state.markers,
                    )
