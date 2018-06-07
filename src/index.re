@@ -115,14 +115,6 @@ module Marker = {
     );
 };
 
-let markersList = [|
-  Marker.markerT(
-    ~markerOffset=35,
-    ~name="Santiago",
-    ~coordinates=[|(-70.6693), (-33.4489)|],
-  ),
-|];
-
 let markerStyle =
   Marker.styleT(
     ~default=ReactDOMRe.Style.make(~fill="#FF5722", ()),
@@ -130,38 +122,39 @@ let markerStyle =
     ~pressed=ReactDOMRe.Style.make(~fill="#FF5722", ()),
   );
 
+let geographyStyle =
+  Geography.styleT(
+    ~default=
+      ReactDOMRe.Style.make(
+        ~fill="#ECEFF1",
+        ~stroke="#607D8B",
+        ~strokeWidth="0.75",
+        ~outline="none",
+        (),
+      ),
+    ~hover=
+      ReactDOMRe.Style.make(
+        ~fill="#607D8B",
+        ~stroke="#607D8B",
+        ~strokeWidth="0.75",
+        ~outline="none",
+        (),
+      ),
+    ~pressed=
+      ReactDOMRe.Style.make(
+        ~fill="#FF5722",
+        ~stroke="#607D8B",
+        ~strokeWidth="0.75",
+        ~outline="none",
+        (),
+      ),
+  );
+
 module App = {
   type action =
     | SetMarkers(array(Marker.markerT));
   type state = {markers: array(Marker.markerT)};
   let component = ReasonReact.reducerComponent("App");
-  let styleC =
-    Geography.styleT(
-      ~default=
-        ReactDOMRe.Style.make(
-          ~fill="#ECEFF1",
-          ~stroke="#607D8B",
-          ~strokeWidth="0.75",
-          ~outline="none",
-          (),
-        ),
-      ~hover=
-        ReactDOMRe.Style.make(
-          ~fill="#607D8B",
-          ~stroke="#607D8B",
-          ~strokeWidth="0.75",
-          ~outline="none",
-          (),
-        ),
-      ~pressed=
-        ReactDOMRe.Style.make(
-          ~fill="#FF5722",
-          ~stroke="#607D8B",
-          ~strokeWidth="0.75",
-          ~outline="none",
-          (),
-        ),
-    );
   let make = _children => {
     ...component,
     initialState: () => {markers: [||]},
@@ -192,75 +185,73 @@ module App = {
       | SetMarkers(markers) => ReasonReact.Update({markers: markers})
       },
     render: ({state}) =>
-      <div className="title">
-        <ComposableMap
-          projectionConfig=(
-            ComposableMap.projectionConfigT(
-              ~scale=205,
-              ~rotation=[|(-11), 0, 0|],
-            )
+      <ComposableMap
+        projectionConfig=(
+          ComposableMap.projectionConfigT(
+            ~scale=205,
+            ~rotation=[|(-11), 0, 0|],
           )
-          width=980
-          height=551
-          style=(ReactDOMRe.Style.make(~width="100%", ~height="auto", ()))>
-          <ZoomableGroup center=[|0, 20|] disablePanning=false>
-            <Geographies geography="world-50m.json">
-              ...(
-                   (geographies, projection) =>
-                     Array.mapi(
-                       (i, geography) =>
-                         if (Geography.id(geography) !== "ATA") {
-                           <Geography
-                             key=(string_of_int(i))
-                             geography
-                             projection
-                             style=styleC
-                           />;
-                         } else {
-                           <div key=(string_of_int(i)) />;
-                         },
-                       geographies,
-                     )
-                 )
-            </Geographies>
-            <Markers>
-              ...(
+        )
+        width=980
+        height=551
+        style=(ReactDOMRe.Style.make(~width="100%", ~height="auto", ()))>
+        <ZoomableGroup center=[|0, 20|] disablePanning=false>
+          <Geographies geography="world-50m.json">
+            ...(
+                 (geographies, projection) =>
                    Array.mapi(
-                     (i, mark) =>
-                       <Marker
-                         key=(string_of_int(i)) marker=mark style=markerStyle>
-                         <circle
-                           cx="0"
-                           cy="0"
-                           r="6px"
-                           style=(
-                             ReactDOMRe.Style.make(
-                               ~stroke="#FF5722",
-                               ~strokeWidth="3px",
-                               ~opacity="0.9",
-                               (),
-                             )
-                           )/>
-                           <text
-                             textAnchor="middle"
-                             y=(string_of_int(mark |. Marker.markerOffset))
-                             style=(
-                               ReactDOMRe.Style.make(
-                                 ~fontFamily="Roboto, sans-serif",
-                                 ~fill="#607D8B",
-                                 (),
-                               )
-                             )>
-                             (ReasonReact.string(mark |. Marker.name))
-                           </text>
-                       </Marker>,
-                     state.markers,
+                     (i, geography) =>
+                       if (Geography.id(geography) !== "ATA") {
+                         <Geography
+                           key=(string_of_int(i))
+                           geography
+                           projection
+                           style=geographyStyle
+                         />;
+                       } else {
+                         <div key=(string_of_int(i)) />;
+                       },
+                     geographies,
                    )
+               )
+          </Geographies>
+          <Markers>
+            ...(
+                 Array.mapi(
+                   (i, marker) =>
+                     <Marker key=(string_of_int(i)) marker style=markerStyle>
+                       <circle
+                         cx="0"
+                         cy="0"
+                         r="6px"
+                         style=(
+                           ReactDOMRe.Style.make(
+                             ~stroke="#FF5722",
+                             ~strokeWidth="3px",
+                             ~opacity="0.9",
+                             (),
+                           )
+                         )
+                       />
+                       <text
+                         textAnchor="middle"
+                         y=(string_of_int(marker |. Marker.markerOffset))
+                         style=(
+                           ReactDOMRe.Style.make(
+                             ~fontFamily="Roboto, sans-serif",
+                             ~fill="#607D8B",
+                             (),
+                           )
+                         )>
+                         (ReasonReact.string(marker |. Marker.name))
+                       </text>
+                     </Marker>,
+                   state.markers,
                  )
-            </Markers>
-          </ZoomableGroup>
-        </ComposableMap>
-      </div>,
+               )
+          </Markers>
+        </ZoomableGroup>
+      </ComposableMap>,
   };
 };
 
